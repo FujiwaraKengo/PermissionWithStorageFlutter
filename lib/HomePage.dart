@@ -7,19 +7,20 @@ import 'package:external_path/external_path.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
+
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List<dynamic> listImagePath = [];
-  var _permissionStatus;
-  Future _futureGetPath;
+  List<dynamic> listImagePath = <dynamic>[];
+  Future? _futureGetPath;
 
   @override
   void initState() {
-    super.initState();
     _getPermission();
+    super.initState();
     _futureGetPath = getImage();
   }
 
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Flutter Permission"),
+        title: const Text("Flutter Permission"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -39,11 +40,10 @@ class _HomePageState extends State<HomePage> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   var dir = Directory(snapshot.data);
-                  print('permission status: $_permissionStatus');
-                  if (_permissionStatus) _fetchFiles(dir);
-                  return Text(snapshot.data);
+                  if (true) _fetchFiles(dir);
+                    return Text(snapshot.data);
                 } else {
-                  return Text("Loading");
+                    return const Text("Loading");
                 }
               },
             ),
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(20),
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              crossAxisCount: 3,
+              crossAxisCount: 2,
               children: _getListImg(listImagePath),
             ),
           )
@@ -65,23 +65,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getPermission() async {
-    final status = await Permission.storage.status;
-    if (status.isGranted) {
-      await Permission.storage.request();
-      setState(() => _permissionStatus = status);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Permission Is Granted")));
-    }
-    else if (status.isDenied) {
-      await Permission.storage.request();
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Permission Is Not Granted")));
-    }
+    await Permission.storage.request().isGranted;
+    setState(() {});
   }
 
 
   Future<String> getImage() {
-    return ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_PICTURES);
+    return ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
   }
 
   _fetchFiles(Directory dir) {
